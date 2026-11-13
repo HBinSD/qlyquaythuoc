@@ -1,0 +1,12 @@
+D:\hehe\c#\QuanLyQuayThuoc.DAL\bin\Debug\net10.0\QuanLyQuayThuoc.DAL.deps.json
+D:\hehe\c#\QuanLyQuayThuoc.DAL\bin\Debug\net10.0\QuanLyQuayThuoc.DAL.dll
+D:\hehe\c#\QuanLyQuayThuoc.DAL\bin\Debug\net10.0\QuanLyQuayThuoc.DAL.pdb
+D:\hehe\c#\QuanLyQuayThuoc.DAL\obj\Debug\net10.0\QuanLyQuayThuoc.DAL.csproj.AssemblyReference.cache
+D:\hehe\c#\QuanLyQuayThuoc.DAL\obj\Debug\net10.0\QuanLyQuayThuoc.DAL.GeneratedMSBuildEditorConfig.editorconfig
+D:\hehe\c#\QuanLyQuayThuoc.DAL\obj\Debug\net10.0\QuanLyQuayThuoc.DAL.AssemblyInfoInputs.cache
+D:\hehe\c#\QuanLyQuayThuoc.DAL\obj\Debug\net10.0\QuanLyQuayThuoc.DAL.AssemblyInfo.cs
+D:\hehe\c#\QuanLyQuayThuoc.DAL\obj\Debug\net10.0\QuanLyQuayThuoc.DAL.csproj.CoreCompileInputs.cache
+D:\hehe\c#\QuanLyQuayThuoc.DAL\obj\Debug\net10.0\QuanLyQuayThuoc.DAL.dll
+D:\hehe\c#\QuanLyQuayThuoc.DAL\obj\Debug\net10.0\refint\QuanLyQuayThuoc.DAL.dll
+D:\hehe\c#\QuanLyQuayThuoc.DAL\obj\Debug\net10.0\QuanLyQuayThuoc.DAL.pdb
+D:\hehe\c#\QuanLyQuayThuoc.DAL\obj\Debug\net10.0\ref\QuanLyQuayThuoc.DAL.dll

@@ -1,0 +1,15 @@
+D:\hehe\c#\QuanLyQuayThuoc.BLL\bin\Debug\net10.0\QuanLyQuayThuoc.BLL.deps.json
+D:\hehe\c#\QuanLyQuayThuoc.BLL\bin\Debug\net10.0\QuanLyQuayThuoc.BLL.dll
+D:\hehe\c#\QuanLyQuayThuoc.BLL\bin\Debug\net10.0\QuanLyQuayThuoc.BLL.pdb
+D:\hehe\c#\QuanLyQuayThuoc.BLL\bin\Debug\net10.0\QuanLyQuayThuoc.DAL.dll
+D:\hehe\c#\QuanLyQuayThuoc.BLL\bin\Debug\net10.0\QuanLyQuayThuoc.DAL.pdb
+D:\hehe\c#\QuanLyQuayThuoc.BLL\obj\Debug\net10.0\QuanLyQuayThuoc.BLL.csproj.AssemblyReference.cache
+D:\hehe\c#\QuanLyQuayThuoc.BLL\obj\Debug\net10.0\QuanLyQuayThuoc.BLL.GeneratedMSBuildEditorConfig.editorconfig
+D:\hehe\c#\QuanLyQuayThuoc.BLL\obj\Debug\net10.0\QuanLyQuayThuoc.BLL.AssemblyInfoInputs.cache
+D:\hehe\c#\QuanLyQuayThuoc.BLL\obj\Debug\net10.0\QuanLyQuayThuoc.BLL.AssemblyInfo.cs
+D:\hehe\c#\QuanLyQuayThuoc.BLL\obj\Debug\net10.0\QuanLyQuayThuoc.BLL.csproj.CoreCompileInputs.cache
+D:\hehe\c#\QuanLyQuayThuoc.BLL\obj\Debug\net10.0\QuanLyQu.FBBC48A8.Up2Date
+D:\hehe\c#\QuanLyQuayThuoc.BLL\obj\Debug\net10.0\QuanLyQuayThuoc.BLL.dll
+D:\hehe\c#\QuanLyQuayThuoc.BLL\obj\Debug\net10.0\refint\QuanLyQuayThuoc.BLL.dll
+D:\hehe\c#\QuanLyQuayThuoc.BLL\obj\Debug\net10.0\QuanLyQuayThuoc.BLL.pdb
+D:\hehe\c#\QuanLyQuayThuoc.BLL\obj\Debug\net10.0\ref\QuanLyQuayThuoc.BLL.dll
