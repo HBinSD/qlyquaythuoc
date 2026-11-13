@@ -58,6 +58,7 @@ public partial class FrmMain : Form
                 "dashboard" => new UcDashboard(),
                 "medicine" => new UcMedicine(),
                 "warehouse" => new UcWarehouse(),
+                "suppliers" => new UcSupplier(),
                 _ => new UcComingSoon(GetPageTitle(page))
             };
 
