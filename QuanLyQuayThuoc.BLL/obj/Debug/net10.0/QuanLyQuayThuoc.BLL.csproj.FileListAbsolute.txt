@@ -13,3 +13,4 @@ D:\hehe\c#\QuanLyQuayThuoc.BLL\obj\Debug\net10.0\QuanLyQuayThuoc.BLL.dll
 D:\hehe\c#\QuanLyQuayThuoc.BLL\obj\Debug\net10.0\refint\QuanLyQuayThuoc.BLL.dll
 D:\hehe\c#\QuanLyQuayThuoc.BLL\obj\Debug\net10.0\QuanLyQuayThuoc.BLL.pdb
 D:\hehe\c#\QuanLyQuayThuoc.BLL\obj\Debug\net10.0\ref\QuanLyQuayThuoc.BLL.dll
+D:\hehe\c#\QuanLyQuayThuoc.BLL\obj\Debug\net10.0\QuanLyQuayThuoc.BLL.sourcelink.json

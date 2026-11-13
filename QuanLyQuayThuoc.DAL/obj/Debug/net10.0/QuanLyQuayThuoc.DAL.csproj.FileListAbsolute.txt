@@ -10,3 +10,4 @@ D:\hehe\c#\QuanLyQuayThuoc.DAL\obj\Debug\net10.0\QuanLyQuayThuoc.DAL.dll
 D:\hehe\c#\QuanLyQuayThuoc.DAL\obj\Debug\net10.0\refint\QuanLyQuayThuoc.DAL.dll
 D:\hehe\c#\QuanLyQuayThuoc.DAL\obj\Debug\net10.0\QuanLyQuayThuoc.DAL.pdb
 D:\hehe\c#\QuanLyQuayThuoc.DAL\obj\Debug\net10.0\ref\QuanLyQuayThuoc.DAL.dll
+D:\hehe\c#\QuanLyQuayThuoc.DAL\obj\Debug\net10.0\QuanLyQuayThuoc.DAL.sourcelink.json

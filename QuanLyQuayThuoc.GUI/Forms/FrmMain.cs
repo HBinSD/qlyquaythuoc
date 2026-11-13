@@ -35,6 +35,8 @@ public partial class FrmMain : Form
         btnReports.Visible = role is "ADMIN" or "PHARMACIST";
     }
 
+    
+
     private void Navigate(string page)
     {
         foreach (var button in _menuButtons.Values)
@@ -59,6 +61,7 @@ public partial class FrmMain : Form
                 "medicine" => new UcMedicine(),
                 "warehouse" => new UcWarehouse(),
                 "suppliers" => new UcSupplier(),
+                "sales" => new UcSale("NV002"),
                 _ => new UcComingSoon(GetPageTitle(page))
             };
 
