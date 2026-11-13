@@ -60,3 +60,4 @@ D:\hehe\c#\QuanLyQuayThuoc.GUI\obj\Debug\net10.0-windows\refint\QuanLyQuayThuoc.
 D:\hehe\c#\QuanLyQuayThuoc.GUI\obj\Debug\net10.0-windows\QuanLyQuayThuoc.GUI.pdb
 D:\hehe\c#\QuanLyQuayThuoc.GUI\obj\Debug\net10.0-windows\QuanLyQuayThuoc.GUI.genruntimeconfig.cache
 D:\hehe\c#\QuanLyQuayThuoc.GUI\obj\Debug\net10.0-windows\ref\QuanLyQuayThuoc.GUI.dll
+D:\hehe\c#\quanlyquaythuoc.gui\obj\Debug\net10.0-windows\QuanLyQuayThuoc.GUI.sourcelink.json
