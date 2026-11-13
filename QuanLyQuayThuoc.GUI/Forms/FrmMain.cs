@@ -26,7 +26,7 @@ public partial class FrmMain : Form
     {
         var role = SessionManager.CurrentUser?.RoleId;
 
-        btnMedicine.Visible = role is "ADMIN" or "PHARMACIST" or "WAREHOUSE";
+        btnMedicine.Visible = role is "ADMIN" or "PHARMACIST";
         btnWarehouse.Visible = role is "ADMIN" or "WAREHOUSE";
         btnSuppliers.Visible = role is "ADMIN" or "WAREHOUSE";
         btnSales.Visible = role is "ADMIN" or "PHARMACIST";
@@ -57,6 +57,7 @@ public partial class FrmMain : Form
             {
                 "dashboard" => new UcDashboard(),
                 "medicine" => new UcMedicine(),
+                "warehouse" => new UcWarehouse(),
                 _ => new UcComingSoon(GetPageTitle(page))
             };
 
