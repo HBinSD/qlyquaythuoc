@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("QuanLyQuayThuoc.DAL")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fa817d3976f5d0fbff634ad24430fd23b6e84810")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ae79fedaa20f7aab41fdd28907ba56d4260bd112")]
 [assembly: System.Reflection.AssemblyProductAttribute("QuanLyQuayThuoc.DAL")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QuanLyQuayThuoc.DAL")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

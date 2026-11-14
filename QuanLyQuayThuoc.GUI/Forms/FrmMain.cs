@@ -32,7 +32,8 @@ public partial class FrmMain : Form
         btnSales.Visible = role is "ADMIN" or "PHARMACIST";
         btnInvoices.Visible = role is "ADMIN" or "PHARMACIST";
         btnEmployees.Visible = role == "ADMIN";
-        btnReports.Visible = role is "ADMIN" or "PHARMACIST";
+
+        btnReports.Visible = SessionManager.CurrentUser != null;
     }
 
     
@@ -62,6 +63,10 @@ public partial class FrmMain : Form
                 "warehouse" => new UcWarehouse(),
                 "suppliers" => new UcSupplier(),
                 "sales" => new UcSale("NV002"),
+                "reports" => new UcReport(
+                    SessionManager.CurrentUser?.EmployeeId ?? "",
+                    SessionManager.CurrentUser?.RoleId ?? ""
+                ),
                 _ => new UcComingSoon(GetPageTitle(page))
             };
 
