@@ -30,8 +30,11 @@ public partial class FrmMain : Form
         btnWarehouse.Visible = role is "ADMIN" or "WAREHOUSE";
         btnSuppliers.Visible = role is "ADMIN" or "WAREHOUSE";
         btnSales.Visible = role is "ADMIN" or "PHARMACIST";
-        btnInvoices.Visible = role is "ADMIN" or "PHARMACIST";
+        btnReturns.Visible = role is "ADMIN" or "PHARMACIST";
+        btnInvoices.Visible = role == "ADMIN";
         btnEmployees.Visible = role == "ADMIN";
+        btnInvoices.Text = role == "ADMIN" ? "   Duyệt kho & Hủy hóa đơn" : "   Hóa đơn";
+        btnEmployees.Text = role == "ADMIN" ? "   Nhân viên & Phân quyền" : "   Nhân viên";
 
         btnReports.Visible = SessionManager.CurrentUser != null;
     }
@@ -62,7 +65,10 @@ public partial class FrmMain : Form
                 "medicine" => new UcMedicine(),
                 "warehouse" => new UcWarehouse(),
                 "suppliers" => new UcSupplier(),
-                "sales" => new UcSale("NV002"),
+                "sales" => new UcSale(SessionManager.CurrentUser?.EmployeeId ?? ""),
+                "returns" => new UcReturns(),
+                "invoices" => new UcInvoiceApprovals(),
+                "employees" => new UcEmployees(),
                 "reports" => new UcReport(
                     SessionManager.CurrentUser?.EmployeeId ?? "",
                     SessionManager.CurrentUser?.RoleId ?? ""
@@ -88,8 +94,9 @@ public partial class FrmMain : Form
         "warehouse" => "Quản lý kho",
         "suppliers" => "Nhà cung cấp",
         "sales" => "Bán thuốc",
-        "invoices" => "Hóa đơn",
-        "employees" => "Nhân viên",
+        "returns" => "Đổi / Trả hàng",
+        "invoices" => "Duyệt kho & Hủy hóa đơn",
+        "employees" => "Nhân viên & Phân quyền",
         "reports" => "Báo cáo",
         _ => "Chức năng"
     };
@@ -126,6 +133,7 @@ public partial class FrmMain : Form
         _menuButtons["warehouse"] = btnWarehouse;
         _menuButtons["suppliers"] = btnSuppliers;
         _menuButtons["sales"] = btnSales;
+        _menuButtons["returns"] = btnReturns;
         _menuButtons["invoices"] = btnInvoices;
         _menuButtons["employees"] = btnEmployees;
         _menuButtons["reports"] = btnReports;

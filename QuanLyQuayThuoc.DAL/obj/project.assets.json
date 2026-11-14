@@ -1366,19 +1366,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\VICTUS\\.nuget\\packages\\": {}
+    "C:\\Users\\ADMIN\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\hehe\\c#\\QuanLyQuayThuoc.DAL\\QuanLyQuayThuoc.DAL.csproj",
+      "projectUniqueName": "E:\\qlyquaythuoc\\QuanLyQuayThuoc.DAL\\QuanLyQuayThuoc.DAL.csproj",
       "projectName": "QuanLyQuayThuoc.DAL",
-      "projectPath": "D:\\hehe\\c#\\QuanLyQuayThuoc.DAL\\QuanLyQuayThuoc.DAL.csproj",
-      "packagesPath": "C:\\Users\\VICTUS\\.nuget\\packages\\",
-      "outputPath": "D:\\hehe\\c#\\QuanLyQuayThuoc.DAL\\obj\\",
+      "projectPath": "E:\\qlyquaythuoc\\QuanLyQuayThuoc.DAL\\QuanLyQuayThuoc.DAL.csproj",
+      "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
+      "outputPath": "E:\\qlyquaythuoc\\QuanLyQuayThuoc.DAL\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\VICTUS\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"

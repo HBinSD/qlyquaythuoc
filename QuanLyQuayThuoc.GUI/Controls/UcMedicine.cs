@@ -172,6 +172,7 @@ namespace QuanLyQuayThuoc.GUI.Controls
                 DataPropertyName = property,
                 HeaderText = header,
                 MinimumWidth = minWidth,
+                FillWeight = minWidth,
                 SortMode = DataGridViewColumnSortMode.Automatic,
                 DefaultCellStyle = { Format = format ?? "" }
             };

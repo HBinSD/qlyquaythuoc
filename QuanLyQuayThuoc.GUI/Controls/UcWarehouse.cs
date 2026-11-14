@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using QuanLyQuayThuoc.BLL.Services;
 using QuanLyQuayThuoc.DAL.Repositories;
+using QuanLyQuayThuoc.GUI.Forms;
+using QuanLyQuayThuoc.GUI.Session;
 
 namespace QuanLyQuayThuoc.GUI.Controls;
 
@@ -29,6 +31,8 @@ public sealed class UcWarehouse : UserControl
 
     private readonly Button btnSearch = new();
     private readonly Button btnRefresh = new();
+    private readonly Button btnStocktakeProposal = new();
+    private readonly Button btnDisposalProposal = new();
 
     private readonly Label lblTitle = new();
     private readonly Label lblStatus = new();
@@ -158,13 +162,21 @@ public sealed class UcWarehouse : UserControl
 
         lblStatus.Text = "Sẵn sàng";
         lblStatus.AutoSize = true;
-        lblStatus.Location = new Point(500, 19);
+        lblStatus.Location = new Point(770, 19);
         lblStatus.ForeColor = Color.Gray;
+
+        ConfigureProposalButton(btnStocktakeProposal, "Đề xuất kiểm kê", 500);
+        btnStocktakeProposal.Click += async (_, _) => await OpenProposalDialogAsync(isDisposal: false);
+        ConfigureProposalButton(btnDisposalProposal, "Đề xuất xuất hủy", 635);
+        btnDisposalProposal.Click += async (_, _) => await OpenProposalDialogAsync(isDisposal: true);
 
         toolbar.Controls.Add(txtSearch);
         toolbar.Controls.Add(btnSearch);
         toolbar.Controls.Add(btnRefresh);
+        toolbar.Controls.Add(btnStocktakeProposal);
+        toolbar.Controls.Add(btnDisposalProposal);
         toolbar.Controls.Add(lblStatus);
+        ConfigureProposalAccess();
 
         mainLayout.Controls.Add(toolbar, 0, 1);
 
@@ -302,6 +314,58 @@ public sealed class UcWarehouse : UserControl
         EventArgs e)
     {
         await LoadCurrentTabAsync();
+    }
+
+    private static void ConfigureProposalButton(Button button, string text, int left)
+    {
+        button.Text = text;
+        button.Size = new Size(125, 34);
+        button.Location = new Point(left, 10);
+        button.BackColor = Color.FromArgb(37, 99, 235);
+        button.ForeColor = Color.White;
+        button.FlatStyle = FlatStyle.Flat;
+        button.FlatAppearance.BorderSize = 0;
+        button.Cursor = Cursors.Hand;
+    }
+
+    private void ConfigureProposalAccess()
+    {
+        string? role = SessionManager.CurrentUser?.RoleId;
+        bool canCreate = string.Equals(role, "WAREHOUSE", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(role, "ADMIN", StringComparison.OrdinalIgnoreCase);
+        btnStocktakeProposal.Visible = canCreate;
+        btnDisposalProposal.Visible = canCreate;
+    }
+
+    private async Task OpenProposalDialogAsync(bool isDisposal)
+    {
+        var user = SessionManager.CurrentUser;
+        if (user is null
+            || (!string.Equals(user.RoleId, "WAREHOUSE", StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(user.RoleId, "ADMIN", StringComparison.OrdinalIgnoreCase)))
+        {
+            MessageBox.Show(
+                "Chỉ nhân viên kho hoặc quản lý mới được tạo đề xuất kho.",
+                "Không đủ quyền",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            return;
+        }
+
+        using var dialog = new WarehouseProposalDialog(
+            _service,
+            isDisposal,
+            user.EmployeeId,
+            user.RoleId);
+        if (dialog.ShowDialog(FindForm()) == DialogResult.OK)
+        {
+            MessageBox.Show(
+                $"Đã gửi đề xuất {dialog.ProposalId} chờ quản lý phê duyệt. Tồn kho chưa thay đổi.",
+                "Đã gửi đề xuất",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+            await LoadCurrentTabAsync();
+        }
     }
 
     // =====================================================

@@ -13,6 +13,7 @@ partial class FrmMain
     private Button btnWarehouse = null!;
     private Button btnSuppliers = null!;
     private Button btnSales = null!;
+    private Button btnReturns = null!;
     private Button btnInvoices = null!;
     private Button btnEmployees = null!;
     private Button btnReports = null!;
@@ -62,6 +63,7 @@ partial class FrmMain
         btnWarehouse = CreateMenuButton("Quản lý kho", "warehouse");
         btnSuppliers = CreateMenuButton("Nhà cung cấp", "suppliers");
         btnSales = CreateMenuButton("Bán thuốc", "sales");
+        btnReturns = CreateMenuButton("Đổi / Trả hàng", "returns");
         btnInvoices = CreateMenuButton("Hóa đơn", "invoices");
         btnEmployees = CreateMenuButton("Nhân viên", "employees");
         btnReports = CreateMenuButton("Báo cáo", "reports");
@@ -105,7 +107,7 @@ partial class FrmMain
         flpMenu.WrapContents = false;
         flpMenu.AutoScroll = true;
         flpMenu.Padding = new Padding(10, 14, 10, 10);
-        flpMenu.Controls.AddRange(new Control[] { btnDashboard, btnMedicine, btnWarehouse, btnSuppliers, btnSales, btnInvoices, btnEmployees, btnReports });
+        flpMenu.Controls.AddRange(new Control[] { btnDashboard, btnMedicine, btnWarehouse, btnSuppliers, btnSales, btnReturns, btnInvoices, btnEmployees, btnReports });
         // pnlTop
         pnlTop.BackColor = Color.White;
         pnlTop.Controls.Add(btnLogout);

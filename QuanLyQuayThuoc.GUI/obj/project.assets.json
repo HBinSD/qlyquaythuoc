@@ -1186,19 +1186,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\VICTUS\\.nuget\\packages\\": {}
+    "C:\\Users\\ADMIN\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\hehe\\c#\\QuanLyQuayThuoc.GUI\\QuanLyQuayThuoc.GUI.csproj",
+      "projectUniqueName": "E:\\qlyquaythuoc\\QuanLyQuayThuoc.GUI\\QuanLyQuayThuoc.GUI.csproj",
       "projectName": "QuanLyQuayThuoc.GUI",
-      "projectPath": "D:\\hehe\\c#\\QuanLyQuayThuoc.GUI\\QuanLyQuayThuoc.GUI.csproj",
-      "packagesPath": "C:\\Users\\VICTUS\\.nuget\\packages\\",
-      "outputPath": "D:\\hehe\\c#\\QuanLyQuayThuoc.GUI\\obj\\",
+      "projectPath": "E:\\qlyquaythuoc\\QuanLyQuayThuoc.GUI\\QuanLyQuayThuoc.GUI.csproj",
+      "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
+      "outputPath": "E:\\qlyquaythuoc\\QuanLyQuayThuoc.GUI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\VICTUS\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0-windows"
@@ -1211,8 +1211,8 @@
           "framework": "net10.0-windows7.0",
           "targetAlias": "net10.0-windows",
           "projectReferences": {
-            "D:\\hehe\\c#\\QuanLyQuayThuoc.BLL\\QuanLyQuayThuoc.BLL.csproj": {
-              "projectPath": "D:\\hehe\\c#\\QuanLyQuayThuoc.BLL\\QuanLyQuayThuoc.BLL.csproj"
+            "E:\\qlyquaythuoc\\QuanLyQuayThuoc.BLL\\QuanLyQuayThuoc.BLL.csproj": {
+              "projectPath": "E:\\qlyquaythuoc\\QuanLyQuayThuoc.BLL\\QuanLyQuayThuoc.BLL.csproj"
             }
           }
         }

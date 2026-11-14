@@ -1,6 +1,7 @@
 
 using Microsoft.Data.SqlClient;
 using System.Data;
+using System.Text.Json;
 using QuanLyQuayThuoc.DAL.Database;
 
 namespace QuanLyQuayThuoc.DAL.Repositories;
@@ -97,6 +98,8 @@ public sealed class WarehouseRepository
         DateTime? ManufactureDate,
         DateTime ExpiryDate
     );
+
+    public sealed record ProposalResult(string ProposalId);
 
 
     // =====================================================
@@ -588,5 +591,249 @@ public sealed class WarehouseRepository
         }
 
         return rows;
+    }
+
+    public async Task<ProposalResult> CreateStocktakeProposalAsync(
+        string batchId,
+        decimal actualQuantity,
+        string? differenceReason,
+        string actorId,
+        CancellationToken ct = default)
+    {
+        string stocktakeId = $"ST{Guid.NewGuid():N}"[..20].ToUpperInvariant();
+        await using var connection = DbConnectionFactory.CreateConnection();
+        await connection.OpenAsync(ct);
+        await using var transaction = (SqlTransaction)await connection.BeginTransactionAsync(
+            IsolationLevel.Serializable, ct);
+
+        try
+        {
+            var (systemQuantity, reservedQuantity, _) = await LockBatchAndReadStockAsync(
+                connection, transaction, batchId, ct);
+
+            if (actualQuantity < reservedQuantity)
+            {
+                throw new InvalidOperationException(
+                    "Số lượng kiểm kê không thể thấp hơn số lượng đang được giữ cho hóa đơn.");
+            }
+
+            bool hasDifference = actualQuantity != systemQuantity;
+            string? reason = string.IsNullOrWhiteSpace(differenceReason)
+                ? null
+                : differenceReason.Trim();
+            if (hasDifference && reason is null)
+                throw new ArgumentException("Vui lòng nhập lý do cho số lượng chênh lệch.", nameof(differenceReason));
+
+            const string headerSql = """
+                INSERT dbo.Stocktake (StocktakeId, CreatedBy, Status, Note)
+                VALUES (@StocktakeId, @ActorId, 'PENDING', @Note);
+                """;
+            await using (var command = new SqlCommand(headerSql, connection, transaction))
+            {
+                command.Parameters.Add("@StocktakeId", SqlDbType.VarChar, 20).Value = stocktakeId;
+                command.Parameters.Add("@ActorId", SqlDbType.VarChar, 20).Value = actorId;
+                command.Parameters.Add("@Note", SqlDbType.NVarChar, 500).Value =
+                    (object?)reason ?? DBNull.Value;
+                await command.ExecuteNonQueryAsync(ct);
+            }
+
+            const string detailSql = """
+                INSERT dbo.StocktakeDetail
+                    (StocktakeId, BatchId, SystemQuantity, ActualQuantity, DifferenceReason)
+                VALUES (@StocktakeId, @BatchId, @SystemQuantity, @ActualQuantity, @Reason);
+                """;
+            await using (var command = new SqlCommand(detailSql, connection, transaction))
+            {
+                command.Parameters.Add("@StocktakeId", SqlDbType.VarChar, 20).Value = stocktakeId;
+                command.Parameters.Add("@BatchId", SqlDbType.VarChar, 25).Value = batchId;
+                AddQuantity(command, "@SystemQuantity", systemQuantity);
+                AddQuantity(command, "@ActualQuantity", actualQuantity);
+                command.Parameters.Add("@Reason", SqlDbType.NVarChar, 300).Value =
+                    (object?)reason ?? DBNull.Value;
+                await command.ExecuteNonQueryAsync(ct);
+            }
+
+            await WriteProposalAuditAsync(
+                connection, transaction, actorId, "CREATE_STOCKTAKE_PROPOSAL",
+                "Stocktake", stocktakeId,
+                new
+                {
+                    batchId,
+                    systemQuantity,
+                    actualQuantity,
+                    differenceQuantity = actualQuantity - systemQuantity,
+                    reason
+                },
+                reason,
+                ct);
+
+            await transaction.CommitAsync(ct);
+            return new ProposalResult(stocktakeId);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(ct);
+            throw;
+        }
+    }
+
+    public async Task<ProposalResult> CreateDisposalProposalAsync(
+        string batchId,
+        decimal quantity,
+        string reason,
+        string actorId,
+        CancellationToken ct = default)
+    {
+        string disposalId = $"DP{Guid.NewGuid():N}"[..20].ToUpperInvariant();
+        await using var connection = DbConnectionFactory.CreateConnection();
+        await connection.OpenAsync(ct);
+        await using var transaction = (SqlTransaction)await connection.BeginTransactionAsync(
+            IsolationLevel.Serializable, ct);
+
+        try
+        {
+            var (physicalStock, reservedQuantity, purchasePrice) = await LockBatchAndReadStockAsync(
+                connection, transaction, batchId, ct);
+            decimal availableStock = physicalStock - reservedQuantity;
+            if (availableStock < 0)
+                availableStock = 0;
+            if (quantity > availableStock)
+            {
+                throw new InvalidOperationException(
+                    $"Số lượng đề xuất vượt tồn khả dụng ({availableStock:N3}, đã trừ lượng đang giữ).");
+            }
+
+            decimal totalLoss = decimal.Round(quantity * purchasePrice, 2, MidpointRounding.AwayFromZero);
+            const string headerSql = """
+                INSERT dbo.Disposal (DisposalId, CreatedBy, Status, Reason, TotalLoss)
+                VALUES (@DisposalId, @ActorId, 'PENDING', @Reason, @TotalLoss);
+                """;
+            await using (var command = new SqlCommand(headerSql, connection, transaction))
+            {
+                command.Parameters.Add("@DisposalId", SqlDbType.VarChar, 20).Value = disposalId;
+                command.Parameters.Add("@ActorId", SqlDbType.VarChar, 20).Value = actorId;
+                command.Parameters.Add("@Reason", SqlDbType.NVarChar, 500).Value = reason;
+                AddMoney(command, "@TotalLoss", totalLoss);
+                await command.ExecuteNonQueryAsync(ct);
+            }
+
+            const string detailSql = """
+                INSERT dbo.DisposalDetail (DisposalId, BatchId, Quantity, PurchasePriceBase)
+                VALUES (@DisposalId, @BatchId, @Quantity, @PurchasePriceBase);
+                """;
+            await using (var command = new SqlCommand(detailSql, connection, transaction))
+            {
+                command.Parameters.Add("@DisposalId", SqlDbType.VarChar, 20).Value = disposalId;
+                command.Parameters.Add("@BatchId", SqlDbType.VarChar, 25).Value = batchId;
+                AddQuantity(command, "@Quantity", quantity);
+                var priceParameter = command.Parameters.Add("@PurchasePriceBase", SqlDbType.Decimal);
+                priceParameter.Precision = 18;
+                priceParameter.Scale = 4;
+                priceParameter.Value = purchasePrice;
+                await command.ExecuteNonQueryAsync(ct);
+            }
+
+            await WriteProposalAuditAsync(
+                connection, transaction, actorId, "CREATE_DISPOSAL_PROPOSAL",
+                "Disposal", disposalId,
+                new { batchId, quantity, purchasePriceBase = purchasePrice, totalLoss, reason },
+                reason,
+                ct);
+
+            await transaction.CommitAsync(ct);
+            return new ProposalResult(disposalId);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(ct);
+            throw;
+        }
+    }
+
+    private static async Task<(decimal PhysicalStock, decimal ReservedQuantity, decimal PurchasePrice)>
+        LockBatchAndReadStockAsync(
+            SqlConnection connection,
+            SqlTransaction transaction,
+            string batchId,
+            CancellationToken ct)
+    {
+        const string batchSql = """
+            SELECT PhysicalStock, PurchasePriceBase
+            FROM dbo.MedicineBatch WITH (UPDLOCK, HOLDLOCK)
+            WHERE BatchId = @BatchId;
+            """;
+
+        decimal physicalStock;
+        decimal purchasePrice;
+        await using (var command = new SqlCommand(batchSql, connection, transaction))
+        {
+            command.Parameters.Add("@BatchId", SqlDbType.VarChar, 25).Value = batchId;
+            await using var reader = await command.ExecuteReaderAsync(ct);
+            if (!await reader.ReadAsync(ct))
+                throw new InvalidOperationException("Không tìm thấy lô thuốc đã chọn.");
+            physicalStock = reader.GetDecimal(0);
+            purchasePrice = reader.GetDecimal(1);
+        }
+
+        const string reservationSql = """
+            SELECT COALESCE(SUM(ReservedQuantity), 0)
+            FROM dbo.InventoryReservation WITH (UPDLOCK, HOLDLOCK)
+            WHERE BatchId = @BatchId
+              AND Status = 'ACTIVE'
+              AND ExpiresAt > SYSDATETIME();
+            """;
+        decimal reservedQuantity;
+        await using (var command = new SqlCommand(reservationSql, connection, transaction))
+        {
+            command.Parameters.Add("@BatchId", SqlDbType.VarChar, 25).Value = batchId;
+            reservedQuantity = Convert.ToDecimal(await command.ExecuteScalarAsync(ct));
+        }
+
+        return (physicalStock, reservedQuantity, purchasePrice);
+    }
+
+    private static async Task WriteProposalAuditAsync(
+        SqlConnection connection,
+        SqlTransaction transaction,
+        string actorId,
+        string action,
+        string entity,
+        string entityId,
+        object newValue,
+        string? reason,
+        CancellationToken ct)
+    {
+        const string sql = """
+            INSERT dbo.AuditLog
+                (EmployeeId, ActionName, EntityName, EntityId, NewValue, Reason)
+            VALUES
+                (@ActorId, @Action, @Entity, @EntityId, @NewValue, @Reason);
+            """;
+        await using var command = new SqlCommand(sql, connection, transaction);
+        command.Parameters.Add("@ActorId", SqlDbType.VarChar, 20).Value = actorId;
+        command.Parameters.Add("@Action", SqlDbType.VarChar, 100).Value = action;
+        command.Parameters.Add("@Entity", SqlDbType.VarChar, 100).Value = entity;
+        command.Parameters.Add("@EntityId", SqlDbType.VarChar, 50).Value = entityId;
+        command.Parameters.Add("@NewValue", SqlDbType.NVarChar, -1).Value =
+            JsonSerializer.Serialize(newValue);
+        command.Parameters.Add("@Reason", SqlDbType.NVarChar, 500).Value =
+            (object?)reason ?? DBNull.Value;
+        await command.ExecuteNonQueryAsync(ct);
+    }
+
+    private static void AddQuantity(SqlCommand command, string name, decimal value)
+    {
+        var parameter = command.Parameters.Add(name, SqlDbType.Decimal);
+        parameter.Precision = 18;
+        parameter.Scale = 3;
+        parameter.Value = value;
+    }
+
+    private static void AddMoney(SqlCommand command, string name, decimal value)
+    {
+        var parameter = command.Parameters.Add(name, SqlDbType.Decimal);
+        parameter.Precision = 18;
+        parameter.Scale = 2;
+        parameter.Value = value;
     }
 }

@@ -125,9 +125,83 @@ public sealed class WarehouseService
             ct);
     }
 
+    public async Task<WarehouseRepository.ProposalResult>
+        SubmitStocktakeProposalAsync(
+            string batchId,
+            decimal actualQuantity,
+            string? differenceReason,
+            string actorId,
+            string actorRole,
+            CancellationToken ct = default)
+    {
+        EnsureProposalAccess(actorId, actorRole);
+        string id = RequiredValue(batchId, 25, "Mã lô thuốc");
+        ValidateQuantity(actualQuantity, allowZero: true, nameof(actualQuantity));
+        string? reason = NormalizeOptional(differenceReason, 300, "Lý do chênh lệch");
+
+        return await _repository.CreateStocktakeProposalAsync(
+            id, actualQuantity, reason, actorId.Trim(), ct);
+    }
+
+    public async Task<WarehouseRepository.ProposalResult>
+        SubmitDisposalProposalAsync(
+            string batchId,
+            decimal quantity,
+            string reason,
+            string actorId,
+            string actorRole,
+            CancellationToken ct = default)
+    {
+        EnsureProposalAccess(actorId, actorRole);
+        string id = RequiredValue(batchId, 25, "Mã lô thuốc");
+        ValidateQuantity(quantity, allowZero: false, nameof(quantity));
+        string note = RequiredValue(reason, 500, "Lý do xuất hủy");
+
+        return await _repository.CreateDisposalProposalAsync(
+            id, quantity, note, actorId.Trim(), ct);
+    }
+
     // =====================================================
     // HELPER
     // =====================================================
+
+    private static void EnsureProposalAccess(string actorId, string actorRole)
+    {
+        if (string.IsNullOrWhiteSpace(actorId) || actorId.Trim().Length > 20)
+            throw new ArgumentException("Không xác định được tài khoản đang thao tác.", nameof(actorId));
+
+        if (!string.Equals(actorRole, "WAREHOUSE", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(actorRole, "ADMIN", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new UnauthorizedAccessException("Chỉ nhân viên kho hoặc quản lý mới được tạo đề xuất kho.");
+        }
+    }
+
+    private static void ValidateQuantity(decimal quantity, bool allowZero, string parameterName)
+    {
+        if (quantity < 0 || (!allowZero && quantity == 0) || quantity > 999999999999999.999M)
+            throw new ArgumentOutOfRangeException(parameterName, "Số lượng không hợp lệ.");
+        if (decimal.Round(quantity, 3) != quantity)
+            throw new ArgumentException("Số lượng tối đa 3 chữ số thập phân.", parameterName);
+    }
+
+    private static string RequiredValue(string? value, int maxLength, string label)
+    {
+        string normalized = (value ?? string.Empty).Trim();
+        if (normalized.Length == 0)
+            throw new ArgumentException($"{label} không được để trống.");
+        if (normalized.Length > maxLength)
+            throw new ArgumentException($"{label} không được vượt quá {maxLength} ký tự.");
+        return normalized;
+    }
+
+    private static string? NormalizeOptional(string? value, int maxLength, string label)
+    {
+        string normalized = (value ?? string.Empty).Trim();
+        if (normalized.Length > maxLength)
+            throw new ArgumentException($"{label} không được vượt quá {maxLength} ký tự.");
+        return normalized.Length == 0 ? null : normalized;
+    }
 
     private static string NormalizeKeyword(string? keyword)
     {

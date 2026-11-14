@@ -312,8 +312,18 @@ public sealed class SaleRepository
             if (subtotal <= 0)
                 throw new InvalidOperationException("Tổng tiền hóa đơn không hợp lệ.");
 
-            // Kiểm tra đơn thuốc và số lượng được phép bán.
-            if (lines.Any(x => IsPrescriptionRequiredAsyncPlaceholder(x)))
+            // Read the medicine requirement from the database, not from UI state.
+            bool hasPrescriptionMedicine = false;
+            foreach (var line in lines)
+            {
+                if (await IsPrescriptionMedicineAsync(cn, tx, line.MedicineId, ct))
+                {
+                    hasPrescriptionMedicine = true;
+                    break;
+                }
+            }
+
+            if (hasPrescriptionMedicine)
             {
                 if (string.IsNullOrWhiteSpace(request.PrescriptionId))
                     throw new InvalidOperationException(
@@ -784,9 +794,6 @@ public sealed class SaleRepository
     // ==========================================
     // HÀM HỖ TRỢ
     // ==========================================
-
-    private static bool IsPrescriptionRequiredAsyncPlaceholder(SaleLine line)
-        => false;
 
     private static object Db(string? value)
         => string.IsNullOrWhiteSpace(value) ? DBNull.Value : value.Trim();
